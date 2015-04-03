@@ -1,0 +1,15 @@
+#!/bin/bash
+set -e
+if [ ! -f /srv/kubernetes/server.cert ]; then
+    if [ -z $EXTERNAL_IP ]; then
+        echo "need to set EXTERNAL_IP"
+        exit -5
+    fi
+
+    cd /tmp
+    bash /make-ca-cert.sh $EXTERNAL_IP
+    chmod +r /srv/kubernetes/*
+fi
+
+mkdir -p /tmp/nginx
+exec /usr/sbin/nginx -g "daemon off; error_log stderr info;"
